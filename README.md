@@ -7,7 +7,7 @@ Uses feature quantization to speedup data loading and save memory.
 
 ### Files:
 
-- **compresser** : most important, include **compress and decompress** code
+- **compresser** : The main component of BiFeat, include **compress and decompress** code
 - packbits&kmeans: modules used by compresser
 
 - examples
