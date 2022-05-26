@@ -1,69 +1,26 @@
 
 
-# experiments to do
-
-##### Accuracy
-
-test **full precision, SQ, VQ**  results
-
-- node classification: 
-  - GraphSAGE(only MAG240M)	**~ 3×3×tune hours**
-  - ClusterGCN, FastGCN (Reddit OGBN-Papers100M MAG240M) 
-    - **~  2×(0.5+2+3)×3×tune hours**
-- link prediction:
-  - GraphSAGE(+1 model if possible)
-  - 1-2dataset  **~4hours**
-- graph regression:
-  - GraphSAGE(+1 model if possible)
-  - 1-2dataset  **~4hours**
+# Code for BiFeat: Supercharge GNN Training via Graph Feature Quantization
 
 
-
-
-
-##### Speed up
-
-- convergence(loss&acc VS epoch)  
-  - node classification (1~3models ×1~3 datasets)(test acc per epoch) **1~5hours**
-- epoch training time
-  - GraphSAGE(only MAG240M)
-  - ClusterGCN, FastGCN (Reddit OGBN-Papers100M MAG240M) 
-  - **full precision, SQ, VQ** (need both SQ and VQ?)
-  - **uncached use result of accuracy test, cached need additional ~5hours**
-- breakdown, show data loading is bottleneck and the source of speedup 
-  - (1~3models ×1~3 datasets) use result of accuracy test
-- split graph&cache&quantized (best speed we can get)
-  - graphsage × MAG240M **~2hours**
-
-
-
-Assume tuning doubles time, expect in total: **around 107hours** , about **54 hours** need high end machine, about half of the time need minor human effort and can be parallelized
-
-
-
-## Division
-
-bother **Junyi** try find some link prediction and graph regression example code, only need 1 or 2 small datasets, and try run them with and without feature compression, record the accuracy
-
-**Ping** help check mag240m if possible to run on our machine and later i will update modified fastgcn and clustergcn code, please help run accuracy tests
-
-
+Uses feature quantization to speedup data loading and save memory.
 
 ## Code:
 
-https://github.com/SolarisAdams/GNN_Feature_Quantization/tree/main/graphsage
+- **compresser** : most important, include **compress and decompress** code
+- packbits&kmeans: modules used by compresser
 
-- graphsage
-  - model
-  - train_compressed: the train script using compression
-  - train_sampling: original train script, for compare
-  - utils: folder containing codes for compression 
-    - **compresser** : most important, include **compress and decompress** code
-    - load_graph ：load and process datasets
-    - packbits&kmeans: modules used by compresser
-    - process_lsc : script to process mag240m, only need to run once to generate full feature(375GB)
+- examples
+  - graphsage
+    - model
+    - train_compressed: the train script using compression
+    - train_sampling: original train script, for compare
+    - utils: folder containing codes for compression 
+      - **compresser** : most important, include **compress and decompress** code
+      - load_graph ：load and process datasets
+      - packbits&kmeans: modules used by compresser
+      - process_lsc : script to process mag240m, to generate full feature
 
-other 2 models(ClusterGCN, FastGCN) needs to be  implemented
 
 
 
@@ -106,30 +63,6 @@ python train_compressed.py --dataset mag240m --mode vq --width 16 --length 2048
 ```
 
 
-
-for small tasks only need to test accuracy, we can simply add compresser after data loading
-
-```python
-# load graph
-g, n_classes = load_graph()            
-
-# process features, no other change needed
-compresser = Compresser(args.mode, args.length, args.width)
-g.ndata["features"] = compresser.compress(g.ndata.pop("features"))
-g.ndata["features"] = compresser.decompress(g.ndata.pop("features"))
-```
-
-
-
-#### environments:
-
-​	torch 1.8.1
-
-​	dgl 0.7 
-
-​	numpy
-
-​	sklearn
 
 
 
