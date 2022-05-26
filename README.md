@@ -5,7 +5,7 @@
 
 Uses feature quantization to speedup data loading and save memory.
 
-## Code:
+### Files:
 
 - **compresser** : most important, include **compress and decompress** code
 - packbits&kmeans: modules used by compresser
@@ -16,7 +16,7 @@ Uses feature quantization to speedup data loading and save memory.
     - train_compressed: the train script using compression
     - train_sampling: original train script, for compare
     - utils: folder containing codes for compression 
-      - **compresser** : most important, include **compress and decompress** code
+      - compresser : include compress and decompress code
       - load_graph ：load and process datasets
       - packbits&kmeans: modules used by compresser
       - process_lsc : script to process mag240m, to generate full feature
@@ -24,7 +24,7 @@ Uses feature quantization to speedup data loading and save memory.
 
 
 
-#### arguments
+### Arguments:
 
 **compresser.py**
 
